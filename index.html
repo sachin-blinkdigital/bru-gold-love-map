@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bru GOLD - The Love Map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold-primary: #C9A227;
+            --gold-light: #E8D5A3;
+            --gold-dark: #8B6914;
+            --coffee-dark: #2C1810;
+            --coffee-medium: #4A2C2A;
+            --cream: #FDF8F0;
+            --cream-dark: #F5E6D3;
+            --white: #FFFFFF;
+            --shadow: rgba(44, 24, 16, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--coffee-dark);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-light) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--gold-light);
+            letter-spacing: 1px;
+        }
+
+        .logo-subtitle {
+            font-size: 11px;
+            color: var(--gold-primary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Filter Dropdown */
+        .filter-container {
+            position: relative;
+        }
+
+        .filter-dropdown {
+            background: var(--gold-primary);
+            color: var(--coffee-dark);
+            border: none;
+            padding: 12px 40px 12px 20px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            appearance: none;
+            min-width: 180px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.3);
+        }
+
+        .filter-dropdown:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 162, 39, 0.4);
+        }
+
+        .filter-container::after {
+            content: '▼';
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: var(--coffee-dark);
+            pointer-events: none;
+        }
+
+        /* Map Container */
+        .map-container {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Map Instruction Bar */
+        .map-instruction {
+            position: fixed;
+            top: 92px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--white);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 13px;
+            color: var(--coffee-medium);
+            box-shadow: 0 4px 20px var(--shadow);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .map-instruction::before {
+            content: '☕';
+            font-size: 16px;
+        }
+
+        /* Custom Pin Styles */
+        .pin-gold {
+            width: 40px;
+            height: 50px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+
+        .pin-gold:hover {
+            transform: scale(1.15) translateY(-5px);
+        }
+
+        .pin-white {
+            width: 32px;
+            height: 40px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+        }
+
+        .pin-white:hover {
+            transform: scale(1.15) translateY(-5px);
+        }
+
+        .pin-special {
+            width: 48px;
+            height: 58px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 4px 10px rgba(201, 162, 39, 0.5));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        /* Spot Popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(44, 24, 16, 0.7);
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: 30px 30px 0 0;
+            padding: 0;
+            z-index: 2001;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 85vh;
+            overflow: hidden;
+        }
+
+        .popup.active {
+            transform: translateY(0);
+        }
+
+        .popup-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--cream-dark);
+            border-radius: 2px;
+            margin: 12px auto;
+        }
+
+        .popup-gallery {
+            width: 100%;
+            height: 220px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
+            gap: 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none;
+        }
+
+        .popup-gallery::-webkit-scrollbar {
+            display: none;
+        }
+
+        .popup-gallery img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+        }
+
+        .popup-content {
+            padding: 24px;
+        }
+
+        .popup-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .popup-tag {
+            background: var(--cream);
+            color: var(--coffee-medium);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .popup-tag.gold {
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-light) 100%);
+            color: var(--coffee-dark);
+        }
+
+        .popup-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--coffee-dark);
+            margin-bottom: 4px;
+        }
+
+        .popup-subtitle {
+            font-size: 14px;
+            color: var(--gold-dark);
+            margin-bottom: 16px;
+        }
+
+        .popup-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--cream-dark);
+        }
+
+        .popup-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--coffee-medium);
+        }
+
+        .popup-detail-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--cream);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .popup-address {
+            font-size: 14px;
+            color: var(--coffee-medium);
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .popup-address strong {
+            color: var(--coffee-dark);
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .popup-tagline {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 16px;
+            color: var(--gold-dark);
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--cream);
+            border-radius: 12px;
+        }
+
+        .popup-cta {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
+            margin-bottom: 12px;
+        }
+
+        .popup-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(201, 162, 39, 0.5);
+        }
+
+        .popup-secondary {
+            display: block;
+            width: 100%;
+            background: var(--cream);
+            color: var(--coffee-dark);
+            text-align: center;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .popup-secondary:hover {
+            background: var(--cream-dark);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 24px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            background: var(--white);
+            border: none;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .popup-close:hover {
+            transform: scale(1.1);
+            background: var(--cream);
+        }
+
+        /* Loading State */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--gold-light);
+            margin-bottom: 8px;
+        }
+
+        .loading-subtitle {
+            font-size: 14px;
+            color: var(--gold-primary);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--coffee-medium);
+            border-top-color: var(--gold-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Filter Pills (Mobile) */
+        .filter-pills {
+            position: fixed;
+            top: 135px;
+            left: 0;
+            right: 0;
+            padding: 0 16px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            z-index: 500;
+            scrollbar-width: none;
+        }
+
+        .filter-pills::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-pill {
+            background: var(--white);
+            color: var(--coffee-medium);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .filter-pill:hover, .filter-pill.active {
+            background: var(--gold-primary);
+            color: var(--coffee-dark);
+            border-color: var(--gold-dark);
+        }
+
+        /* Legend */
+        .legend {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: var(--white);
+            padding: 16px 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px var(--shadow);
+            z-index: 500;
+        }
+
+        .legend-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--coffee-dark);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--coffee-medium);
+            margin-bottom: 8px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-pin {
+            width: 20px;
+            height: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .logo-text {
+                font-size: 20px;
+            }
+
+            .filter-dropdown {
+                min-width: 140px;
+                padding: 10px 32px 10px 16px;
+                font-size: 13px;
+            }
+
+            .map-instruction {
+                top: 88px;
+                font-size: 12px;
+                padding: 8px 16px;
+            }
+
+            .legend {
+                bottom: 16px;
+                left: 16px;
+                padding: 12px 16px;
+            }
+
+            .popup-name {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-logo">Bru GOLD</div>
+        <div class="loading-subtitle">The Love Map</div>
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">☕</div>
+            <div>
+                <div class="logo-text">Bru GOLD</div>
+                <div class="logo-subtitle">The Love Map</div>
+            </div>
+        </div>
+        <div class="filter-container">
+            <select class="filter-dropdown" id="categoryFilter" onchange="filterPins()">
+                <option value="all">All Coffee Spots</option>
+                <option value="cute">☕ Cute</option>
+                <option value="cozy">🛋️ Cozy</option>
+                <option value="scenic">🌅 Scenic</option>
+                <option value="budget">💰 Budget-Friendly</option>
+                <option value="rooftop">🌆 Rooftop</option>
+                <option value="late">🌙 Open Late</option>
+                <option value="new">✨ New Cafés</option>
+                <option value="bru-gold">⭐ Bru GOLD Spots</option>
+            </select>
+        </div>
+    </header>
+
+    <!-- Map Instruction -->
+    <div class="map-instruction">
+        Tap a pin to see the vibe, photos, and book a table instantly
+    </div>
+
+    <!-- Filter Pills -->
+    <div class="filter-pills">
+        <div class="filter-pill active" onclick="setFilter('all')">All</div>
+        <div class="filter-pill" onclick="setFilter('cute')">☕ Cute</div>
+        <div class="filter-pill" onclick="setFilter('cozy')">🛋️ Cozy</div>
+        <div class="filter-pill" onclick="setFilter('scenic')">🌅 Scenic</div>
+        <div class="filter-pill" onclick="setFilter('budget')">💰 Budget</div>
+        <div class="filter-pill" onclick="setFilter('rooftop')">🌆 Rooftop</div>
+        <div class="filter-pill" onclick="setFilter('late')">🌙 Open Late</div>
+        <div class="filter-pill" onclick="setFilter('new')">✨ New</div>
+    </div>
+
+    <!-- Map -->
+    <div class="map-container">
+        <div id="map"></div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+        <div class="legend-title">Map Legend</div>
+        <div class="legend-item">
+            <svg class="legend-pin" viewBox="0 0 24 30">
+                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" fill="#C9A227"/>
+                <circle cx="12" cy="11" r="5" fill="#FDF8F0"/>
+            </svg>
+            <span>Bru GOLD Coffee Date Spot</span>
+        </div>
+        <div class="legend-item">
+            <svg class="legend-pin" viewBox="0 0 24 30">
+                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" fill="#FFFFFF" stroke="#4A2C2A" stroke-width="2"/>
+                <circle cx="12" cy="11" r="4" fill="#4A2C2A"/>
+            </svg>
+            <span>Other Coffee Spots</span>
+        </div>
+        <div class="legend-item">
+            <svg class="legend-pin" viewBox="0 0 24 30">
+                <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 18 12 18s12-9 12-18c0-6.6-5.4-12-12-12z" fill="url(#goldGrad)"/>
+                <text x="12" y="15" text-anchor="middle" fill="#2C1810" font-size="10">★</text>
+                <defs>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#E8D5A3"/>
+                        <stop offset="100%" style="stop-color:#C9A227"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span>Bru GOLD Kiosk / Pop-up</span>
+        </div>
+    </div>
+
+    <!-- Popup Overlay -->
+    <div class="popup-overlay" id="popupOverlay" onclick="closePopup()"></div>
+
+    <!-- Spot Popup -->
+    <div class="popup" id="popup">
+        <button class="popup-close" onclick="closePopup()">×</button>
+        <div class="popup-handle"></div>
+        <div class="popup-gallery" id="popupGallery"></div>
+        <div class="popup-content">
+            <div class="popup-tags" id="popupTags"></div>
+            <h2 class="popup-name" id="popupName"></h2>
+            <p class="popup-subtitle" id="popupSubtitle"></p>
+            <div class="popup-details" id="popupDetails"></div>
+            <div class="popup-address" id="popupAddress"></div>
+            <p class="popup-tagline">"Looks like a great place for a Coffee Date."</p>
+            <a href="#" class="popup-cta" id="popupCta" target="_blank">☕ Book a Table on Zomato</a>
+            <a href="#" class="popup-secondary" id="popupDirections" target="_blank">📍 Get Directions</a>
+        </div>
+    </div>
+
+    <!-- Google Maps Script -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap" async defer></script>
+    
+    <script>
+        // Sample Coffee Spots Data (Mumbai-based)
+        const coffeeSpots = [
+            {
+                id: 1,
+                name: "Third Wave Coffee",
+                subtitle: "Coffee Date Spot #1",
+                type: "gold",
+                categories: ["cozy", "scenic"],
+                lat: 19.0596,
+                lng: 72.8295,
+                distance: "1.2 km",
+                openUntil: "11:00 PM",
+                popularity: "High",
+                address: "Ground Floor, Linking Road, Bandra West, Mumbai 400050",
+                images: [
+                    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800",
+                    "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/third-wave-coffee-roasters-bandra-west",
+                mapsLink: "https://maps.google.com/?q=Third+Wave+Coffee+Bandra"
+            },
+            {
+                id: 2,
+                name: "Blue Tokai Coffee",
+                subtitle: "Coffee Date Spot #2",
+                type: "gold",
+                categories: ["cute", "budget"],
+                lat: 19.0625,
+                lng: 72.8362,
+                distance: "0.8 km",
+                openUntil: "10:30 PM",
+                popularity: "Medium",
+                address: "Hill Road, Near Lucky Restaurant, Bandra West, Mumbai 400050",
+                images: [
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800",
+                    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/blue-tokai-coffee-roasters-bandra-west",
+                mapsLink: "https://maps.google.com/?q=Blue+Tokai+Coffee+Bandra"
+            },
+            {
+                id: 3,
+                name: "Starbucks Reserve",
+                subtitle: "Coffee Date Spot #3",
+                type: "gold",
+                categories: ["scenic", "rooftop"],
+                lat: 19.0544,
+                lng: 72.8402,
+                distance: "2.1 km",
+                openUntil: "12:00 AM",
+                popularity: "Very High",
+                address: "14th Road, Khar West, Mumbai 400052",
+                images: [
+                    "https://images.unsplash.com/photo-1559496417-e7f25cb247f3?w=800",
+                    "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/starbucks-khar",
+                mapsLink: "https://maps.google.com/?q=Starbucks+Khar"
+            },
+            {
+                id: 4,
+                name: "Café Mondegar",
+                subtitle: "Other Coffee Spot",
+                type: "white",
+                categories: ["cozy", "late"],
+                lat: 18.9220,
+                lng: 72.8330,
+                distance: "8.5 km",
+                openUntil: "1:00 AM",
+                popularity: "High",
+                address: "Metro House, Colaba Causeway, Colaba, Mumbai 400039",
+                images: [
+                    "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/cafe-mondegar-colaba",
+                mapsLink: "https://maps.google.com/?q=Cafe+Mondegar+Colaba"
+            },
+            {
+                id: 5,
+                name: "Birdsong Café",
+                subtitle: "Coffee Date Spot #4",
+                type: "gold",
+                categories: ["cute", "scenic", "new"],
+                lat: 19.0654,
+                lng: 72.8356,
+                distance: "1.5 km",
+                openUntil: "11:00 PM",
+                popularity: "Medium",
+                address: "Waroda Road, Off Hill Road, Bandra West, Mumbai 400050",
+                images: [
+                    "https://images.unsplash.com/photo-1464979681340-bdd28a61699e?w=800",
+                    "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/birdsong-the-organic-cafe-bandra-west",
+                mapsLink: "https://maps.google.com/?q=Birdsong+Cafe+Bandra"
+            },
+            {
+                id: 6,
+                name: "Le 15 Café",
+                subtitle: "Other Coffee Spot",
+                type: "white",
+                categories: ["cute", "budget"],
+                lat: 19.0577,
+                lng: 72.8310,
+                distance: "1.0 km",
+                openUntil: "9:00 PM",
+                popularity: "Medium",
+                address: "Palladium Mall, Lower Parel, Mumbai 400013",
+                images: [
+                    "https://images.unsplash.com/photo-1600093463592-8e36ae95ef56?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/le-15-cafe-lower-parel",
+                mapsLink: "https://maps.google.com/?q=Le+15+Cafe+Palladium"
+            },
+            {
+                id: 7,
+                name: "Bru GOLD Pop-Up",
+                subtitle: "Limited Time Valentine's Experience",
+                type: "special",
+                categories: ["bru-gold"],
+                lat: 19.0640,
+                lng: 72.8372,
+                distance: "1.3 km",
+                openUntil: "10:00 PM",
+                popularity: "Featured",
+                address: "Carter Road Promenade, Bandra West, Mumbai 400050",
+                images: [
+                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?w=800",
+                    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai",
+                mapsLink: "https://maps.google.com/?q=Carter+Road+Bandra",
+                isPopup: true,
+                popupMessage: "Stop by for your golden coffee moment this Valentine's!"
+            },
+            {
+                id: 8,
+                name: "Kala Ghoda Café",
+                subtitle: "Other Coffee Spot",
+                type: "white",
+                categories: ["scenic", "cozy"],
+                lat: 18.9310,
+                lng: 72.8318,
+                distance: "9.2 km",
+                openUntil: "11:30 PM",
+                popularity: "High",
+                address: "10, Ropewalk Lane, Kala Ghoda, Fort, Mumbai 400001",
+                images: [
+                    "https://images.unsplash.com/photo-1445116572660-236099ec97a0?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/kala-ghoda-cafe-fort",
+                mapsLink: "https://maps.google.com/?q=Kala+Ghoda+Cafe"
+            },
+            {
+                id: 9,
+                name: "The Pantry",
+                subtitle: "Coffee Date Spot #5",
+                type: "gold",
+                categories: ["rooftop", "scenic", "late"],
+                lat: 18.9283,
+                lng: 72.8321,
+                distance: "9.0 km",
+                openUntil: "12:30 AM",
+                popularity: "Very High",
+                address: "Yeshwant Chambers, Military Square Lane, Kala Ghoda, Mumbai 400001",
+                images: [
+                    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800",
+                    "https://images.unsplash.com/photo-1493857671505-72967e2e2760?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/the-pantry-fort",
+                mapsLink: "https://maps.google.com/?q=The+Pantry+Kala+Ghoda"
+            },
+            {
+                id: 10,
+                name: "Subko Coffee",
+                subtitle: "Coffee Date Spot #6",
+                type: "gold",
+                categories: ["new", "cute", "budget"],
+                lat: 19.0608,
+                lng: 72.8380,
+                distance: "1.1 km",
+                openUntil: "10:00 PM",
+                popularity: "Rising",
+                address: "33rd Road, Near Pali Village Cafe, Bandra West, Mumbai 400050",
+                images: [
+                    "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"
+                ],
+                zomatoLink: "https://www.zomato.com/mumbai/subko-coffee-bandra-west",
+                mapsLink: "https://maps.google.com/?q=Subko+Coffee+Bandra"
+            }
+        ];
+
+        let map;
+        let markers = [];
+        let currentFilter = 'all';
+
+        // SVG Pin Icons
+        const goldPinSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 50" width="40" height="50">
+                <defs>
+                    <linearGradient id="goldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#E8D5A3"/>
+                        <stop offset="100%" style="stop-color:#C9A227"/>
+                    </linearGradient>
+                    <filter id="shadow1" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+                    </filter>
+                </defs>
+                <path d="M20 0C9 0 0 9 0 20c0 15 20 30 20 30s20-15 20-30c0-11-9-20-20-20z" fill="url(#goldGrad1)" filter="url(#shadow1)"/>
+                <circle cx="20" cy="18" r="8" fill="#FDF8F0"/>
+                <text x="20" y="22" text-anchor="middle" fill="#C9A227" font-size="12" font-weight="bold">☕</text>
+            </svg>
+        `;
+
+        const whitePinSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" width="32" height="40">
+                <defs>
+                    <filter id="shadow2" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="0" dy="2" stdDeviation="1" flood-opacity="0.2"/>
+                    </filter>
+                </defs>
+                <path d="M16 0C7.2 0 0 7.2 0 16c0 12 16 24 16 24s16-12 16-24c0-8.8-7.2-16-16-16z" fill="#FFFFFF" stroke="#4A2C2A" stroke-width="2" filter="url(#shadow2)"/>
+                <circle cx="16" cy="14" r="5" fill="#4A2C2A"/>
+            </svg>
+        `;
+
+        const specialPinSvg = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 58" width="48" height="58">
+                <defs>
+                    <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#FFE566"/>
+                        <stop offset="50%" style="stop-color:#C9A227"/>
+                        <stop offset="100%" style="stop-color:#8B6914"/>
+                    </linearGradient>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path d="M24 0C10.8 0 0 10.8 0 24c0 18 24 34 24 34s24-16 24-34c0-13.2-10.8-24-24-24z" fill="url(#goldGrad2)" filter="url(#glow)"/>
+                <circle cx="24" cy="22" r="10" fill="#FDF8F0"/>
+                <text x="24" y="27" text-anchor="middle" fill="#C9A227" font-size="14" font-weight="bold">★</text>
+            </svg>
+        `;
+
+        function initMap() {
+            // Center on Bandra, Mumbai
+            const center = { lat: 19.0596, lng: 72.8295 };
+            
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 14,
+                center: center,
+                styles: [
+                    { elementType: "geometry", stylers: [{ color: "#FDF8F0" }] },
+                    { elementType: "labels.text.stroke", stylers: [{ color: "#FDF8F0" }] },
+                    { elementType: "labels.text.fill", stylers: [{ color: "#4A2C2A" }] },
+                    { featureType: "road", elementType: "geometry", stylers: [{ color: "#F5E6D3" }] },
+                    { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#E8D5A3" }] },
+                    { featureType: "water", elementType: "geometry", stylers: [{ color: "#C9A227", lightness: 50 }] },
+                    { featureType: "poi.park", elementType: "geometry", stylers: [{ color: "#E8D5A3" }] },
+                    { featureType: "poi.business", stylers: [{ visibility: "off" }] }
+                ],
+                disableDefaultUI: true,
+                zoomControl: true,
+                zoomControlOptions: {
+                    position: google.maps.ControlPosition.RIGHT_BOTTOM
+                }
+            });
+
+            createMarkers();
+            
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1500);
+        }
+
+        function createMarkers() {
+            coffeeSpots.forEach(spot => {
+                let iconSvg;
+                switch(spot.type) {
+                    case 'gold':
+                        iconSvg = goldPinSvg;
+                        break;
+                    case 'special':
+                        iconSvg = specialPinSvg;
+                        break;
+                    default:
+                        iconSvg = whitePinSvg;
+                }
+
+                const marker = new google.maps.Marker({
+                    position: { lat: spot.lat, lng: spot.lng },
+                    map: map,
+                    title: spot.name,
+                    icon: {
+                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(iconSvg),
+                        scaledSize: spot.type === 'special' ? new google.maps.Size(48, 58) : 
+                                    spot.type === 'gold' ? new google.maps.Size(40, 50) : 
+                                    new google.maps.Size(32, 40)
+                    },
+                    animation: google.maps.Animation.DROP,
+                    spotData: spot
+                });
+
+                marker.addListener('click', () => openPopup(spot));
+                markers.push({ marker, spot });
+            });
+        }
+
+        function filterPins() {
+            const filter = document.getElementById('categoryFilter').value;
+            currentFilter = filter;
+            updatePills(filter);
+            
+            markers.forEach(({ marker, spot }) => {
+                if (filter === 'all') {
+                    marker.setVisible(true);
+                } else if (filter === 'bru-gold') {
+                    marker.setVisible(spot.type === 'gold' || spot.type === 'special');
+                } else {
+                    marker.setVisible(spot.categories.includes(filter));
+                }
+            });
+        }
+
+        function setFilter(filter) {
+            document.getElementById('categoryFilter').value = filter;
+            filterPins();
+        }
+
+        function updatePills(filter) {
+            document.querySelectorAll('.filter-pill').forEach(pill => {
+                pill.classList.remove('active');
+                if (pill.textContent.toLowerCase().includes(filter) || 
+                    (filter === 'all' && pill.textContent === 'All')) {
+                    pill.classList.add('active');
+                }
+            });
+        }
+
+        function openPopup(spot) {
+            const popup = document.getElementById('popup');
+            const overlay = document.getElementById('popupOverlay');
+            
+            // Gallery
+            const gallery = document.getElementById('popupGallery');
+            gallery.innerHTML = spot.images.map(img => 
+                `<img src="${img}" alt="${spot.name}" onerror="this.src='https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800'">`
+            ).join('');
+            
+            // Tags
+            const tags = document.getElementById('popupTags');
+            let tagsHtml = spot.type === 'gold' || spot.type === 'special' ? 
+                '<span class="popup-tag gold">☕ Bru GOLD Spot</span>' : '';
+            tagsHtml += spot.categories.map(cat => 
+                `<span class="popup-tag">${getCategoryEmoji(cat)} ${capitalizeFirst(cat)}</span>`
+            ).join('');
+            tags.innerHTML = tagsHtml;
+            
+            // Name & Subtitle
+            document.getElementById('popupName').textContent = spot.name;
+            document.getElementById('popupSubtitle').textContent = spot.subtitle;
+            
+            // Details
+            const details = document.getElementById('popupDetails');
+            details.innerHTML = `
+                <div class="popup-detail">
+                    <span class="popup-detail-icon">📍</span>
+                    <span>${spot.distance} away</span>
+                </div>
+                <div class="popup-detail">
+                    <span class="popup-detail-icon">🕐</span>
+                    <span>Open until ${spot.openUntil}</span>
+                </div>
+                <div class="popup-detail">
+                    <span class="popup-detail-icon">🔥</span>
+                    <span>${spot.popularity} today</span>
+                </div>
+            `;
+            
+            // Address
+            document.getElementById('popupAddress').innerHTML = `
+                <strong>Address</strong>
+                ${spot.address}
+            `;
+            
+            // CTAs
+            document.getElementById('popupCta').href = spot.zomatoLink;
+            document.getElementById('popupDirections').href = spot.mapsLink;
+            
+            // Show popup
+            overlay.classList.add('active');
+            popup.classList.add('active');
+        }
+
+        function closePopup() {
+            document.getElementById('popup').classList.remove('active');
+            document.getElementById('popupOverlay').classList.remove('active');
+        }
+
+        function getCategoryEmoji(category) {
+            const emojis = {
+                'cute': '☕',
+                'cozy': '🛋️',
+                'scenic': '🌅',
+                'budget': '💰',
+                'rooftop': '🌆',
+                'late': '🌙',
+                'new': '✨',
+                'bru-gold': '⭐'
+            };
+            return emojis[category] || '📍';
+        }
+
+        function capitalizeFirst(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+
+        // Close popup on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePopup();
+        });
+
+        // If Google Maps fails to load, show a fallback
+        window.gm_authFailure = function() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('map').innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #FDF8F0 0%, #F5E6D3 100%); text-align: center; padding: 40px;">
+                    <h2 style="font-family: 'Playfair Display', serif; color: #2C1810; margin-bottom: 16px;">Map Preview Mode</h2>
+                    <p style="color: #4A2C2A; margin-bottom: 24px;">Add your Google Maps API key to see the full interactive map.</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                        ${coffeeSpots.slice(0, 6).map(spot => `
+                            <div onclick="openPopup(coffeeSpots.find(s => s.id === ${spot.id}))" style="background: white; padding: 16px 24px; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 15px rgba(44,24,16,0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <strong style="color: #2C1810;">${spot.name}</strong>
+                                <p style="font-size: 12px; color: #C9A227; margin-top: 4px;">${spot.subtitle}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        };
+    </script>
+</body>
+</html>
