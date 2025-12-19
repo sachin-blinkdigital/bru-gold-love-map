@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CATEGORY_EMOJIS } from '../config/mapConfig';
 
-function Popup({ spot, isOpen, onClose, onShowDirections }) {
+function Popup({ spot, isOpen, onClose }) {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   useEffect(() => {
@@ -22,16 +22,19 @@ function Popup({ spot, isOpen, onClose, onShowDirections }) {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const location = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
           setIsGettingLocation(false);
-          onShowDirections(spot, location);
+
+          // Open Google Maps with navigation
+          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${spot.lat},${spot.lng}&travelmode=driving`;
+          window.open(googleMapsUrl, '_blank');
         },
         (error) => {
           setIsGettingLocation(false);
-          alert('Unable to get your location. Please enable location access.');
+          // Open Google Maps without origin (will use device location)
+          const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}&travelmode=driving`;
+          window.open(googleMapsUrl, '_blank');
         },
         {
           enableHighAccuracy: true,
@@ -41,7 +44,9 @@ function Popup({ spot, isOpen, onClose, onShowDirections }) {
       );
     } else {
       setIsGettingLocation(false);
-      alert('Geolocation is not supported by your browser.');
+      // Fallback: open Google Maps without origin
+      const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${spot.lat},${spot.lng}&travelmode=driving`;
+      window.open(googleMapsUrl, '_blank');
     }
   };
 
