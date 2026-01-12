@@ -170,3 +170,39 @@ export const THEME_COLORS = {
   white: '#FFFFFF',
   googleBlue: '#4285F4'
 };
+
+// ============================================
+// HEAT MAP CONFIGURATION
+// ============================================
+
+// Popularity weights for heat map intensity
+export const POPULARITY_WEIGHTS = {
+  'Very High': 1.0,
+  'High': 0.8,
+  'Featured': 0.9,
+  'Medium': 0.5,
+  'Rising': 0.6,
+  'Low': 0.3
+};
+
+// Heat map gradient (Zomato-style vibrant colors)
+export const HEATMAP_GRADIENT = [
+  'rgba(0, 0, 0, 0)',
+  'rgba(0, 255, 255, 0.4)',     // cyan (low density)
+  'rgba(0, 191, 255, 0.6)',     // deep sky blue
+  'rgba(0, 127, 255, 0.7)',     // azure
+  'rgba(0, 255, 0, 0.7)',       // green
+  'rgba(127, 255, 0, 0.8)',     // chartreuse
+  'rgba(255, 255, 0, 0.9)',     // yellow
+  'rgba(255, 191, 0, 0.95)',    // golden
+  'rgba(255, 127, 0, 1)',       // orange
+  'rgba(255, 0, 0, 1)'          // red (high density)
+];
+
+// Heat map options
+export const HEATMAP_OPTIONS = {
+  radius: 40,
+  opacity: 0.8,
+  maxIntensity: 1,
+  dissipating: true
+};

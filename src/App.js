@@ -7,10 +7,11 @@ import Legend from './components/Legend';
 import Popup from './components/Popup';
 import DirectionsPanel from './components/DirectionsPanel';
 import Loading from './components/Loading';
+import HeatMapToggle from './components/HeatMapToggle';
 import { GOOGLE_MAPS_API_KEY } from './config/mapConfig';
 import coffeeSpots from './data/coffeeSpots';
 
-const libraries = ['places', 'directions'];
+const libraries = ['places', 'directions', 'visualization'];
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -21,6 +22,7 @@ function App() {
   const [userLocation, setUserLocation] = useState(null);
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [map, setMap] = useState(null);
+  const [showHeatMap, setShowHeatMap] = useState(false);
 
   // Hiding loading screen after 1.5s 
   useEffect(() => {
@@ -66,6 +68,10 @@ function App() {
     }
   }, [directionsRenderer, map]);
 
+  const handleToggleHeatMap = useCallback(() => {
+    setShowHeatMap(prev => !prev);
+  }, []);
+
   const filteredSpots = coffeeSpots.filter((spot) => {
     if (currentFilter === 'all') return true;
     if (currentFilter === 'bru-gold') {
@@ -107,10 +113,13 @@ function App() {
           selectedSpot={selectedSpot}
           userLocation={userLocation}
           onDirectionsUpdate={handleDirectionsUpdate}
+          showHeatMap={showHeatMap}
         />
       </LoadScript>
 
       <Legend />
+
+      <HeatMapToggle isActive={showHeatMap} onToggle={handleToggleHeatMap} />
 
       <Popup
         spot={selectedSpot}

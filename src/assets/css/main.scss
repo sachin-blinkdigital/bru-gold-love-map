@@ -928,3 +928,103 @@ body {
     color: $white;
   }
 }
+
+// ============================================
+// MAP VIEW TOGGLE STYLES
+// ============================================
+
+.map-view-toggle {
+  position: fixed;
+  top: 92px;
+  right: 16px;
+  z-index: $z-ui;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: $white;
+  padding: 8px;
+  border-radius: $radius-medium;
+  box-shadow: 0 4px 20px $shadow;
+  transition: all $transition-medium;
+
+  &.collapsed {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    top: 88px;
+    right: 12px;
+    padding: 6px;
+    gap: 6px;
+  }
+}
+
+.map-view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: $cream;
+  color: $coffee-medium;
+  border: 2px solid transparent;
+  padding: 12px 16px;
+  border-radius: $radius-small;
+  font-family: $font-primary;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-medium;
+  min-width: 130px;
+
+  // Collapsed state (icons only)
+  .collapsed & {
+    min-width: auto;
+    padding: 12px;
+
+    .btn-icon {
+      margin: 0;
+    }
+  }
+
+  &:hover {
+    background: $cream-dark;
+    color: $coffee-dark;
+  }
+
+  &.active {
+    background: linear-gradient(135deg, $gold-primary 0%, $gold-dark 100%);
+    color: $white;
+    border-color: $gold-dark;
+    box-shadow: 0 2px 10px $shadow-gold;
+
+    &:hover {
+      background: linear-gradient(135deg, $gold-light 0%, $gold-primary 100%);
+    }
+  }
+
+  .btn-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .btn-text {
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 10px 14px;
+    min-width: 110px;
+    font-size: 12px;
+
+    .collapsed & {
+      padding: 10px;
+      min-width: auto;
+    }
+
+    .btn-icon {
+      font-size: 16px;
+    }
+  }
+}

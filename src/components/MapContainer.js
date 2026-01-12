@@ -5,7 +5,10 @@ import {
   MAP_DEFAULT_ZOOM,
   MAP_OPTIONS,
   PIN_ICONS,
-  PIN_SIZES
+  PIN_SIZES,
+  POPULARITY_WEIGHTS,
+  HEATMAP_GRADIENT,
+  HEATMAP_OPTIONS
 } from '../config/mapConfig';
 
 const containerStyle = {
@@ -19,10 +22,12 @@ function MapContainer({
   onMapLoad,
   selectedSpot,
   userLocation,
-  onDirectionsUpdate
+  onDirectionsUpdate,
+  showHeatMap
 }) {
   const mapRef = useRef(null);
   const markersRef = useRef([]);
+  const heatmapRef = useRef(null);
   const directionsServiceRef = useRef(null);
   const directionsRendererRef = useRef(null);
   const onMarkerClickRef = useRef(onMarkerClick);
@@ -32,6 +37,34 @@ function MapContainer({
   useEffect(() => {
     onMarkerClickRef.current = onMarkerClick;
   }, [onMarkerClick]);
+
+  // Create heat map layer
+  const createHeatMap = useCallback((map, spotsList) => {
+    // Clear existing heat map
+    if (heatmapRef.current) {
+      heatmapRef.current.setMap(null);
+    }
+
+    // Create weighted locations for heat map
+    const heatmapData = spotsList.map(spot => {
+      const weight = POPULARITY_WEIGHTS[spot.popularity] || 0.5;
+      return {
+        location: new window.google.maps.LatLng(spot.lat, spot.lng),
+        weight: weight
+      };
+    });
+
+    // Create heat map layer
+    heatmapRef.current = new window.google.maps.visualization.HeatmapLayer({
+      data: heatmapData,
+      map: map,
+      radius: HEATMAP_OPTIONS.radius,
+      opacity: HEATMAP_OPTIONS.opacity,
+      maxIntensity: HEATMAP_OPTIONS.maxIntensity,
+      gradient: HEATMAP_GRADIENT,
+      dissipating: HEATMAP_OPTIONS.dissipating
+    });
+  }, []);
 
   // Create markers with custom SVG icons
   const createMarkers = useCallback((map, spotsList) => {
@@ -101,6 +134,21 @@ function MapContainer({
       createMarkers(mapRef.current, spots);
     }
   }, [spots, createMarkers]);
+
+  // Toggle heat map overlay 
+  useEffect(() => {
+    if (!mapRef.current || !isInitializedRef.current) return;
+
+    if (showHeatMap) {
+      // Show heat map overlay 
+      createHeatMap(mapRef.current, spots);
+    } else {
+      // Hide heat map
+      if (heatmapRef.current) {
+        heatmapRef.current.setMap(null);
+      }
+    }
+  }, [showHeatMap, spots, createHeatMap]);
 
   // Calculate directions when user location and selected spot are available
   useEffect(() => {
