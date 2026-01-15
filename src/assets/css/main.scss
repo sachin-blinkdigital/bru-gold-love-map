@@ -113,7 +113,7 @@ body {
 // Map Instruction Bar
 .map-instruction {
   position: fixed;
-  top: 92px;
+  top: 165px;
   left: 50%;
   transform: translateX(-50%);
   background: $white;
@@ -132,7 +132,7 @@ body {
   }
 
   @media (max-width: $breakpoint-mobile) {
-    top: 88px;
+    top: 158px;
     font-size: 12px;
     padding: 8px 16px;
   }
@@ -224,6 +224,222 @@ body {
 
   @media (max-width: $breakpoint-mobile) {
     padding: 12px 16px;
+  }
+}
+
+// ============================================
+// SEARCH BAR STYLES
+// ============================================
+
+.search-bar-container {
+  position: fixed;
+  top: 92px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 600px;
+  z-index: $z-ui;
+
+  @media (max-width: $breakpoint-mobile) {
+    top: 88px;
+    width: 94%;
+  }
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: $white;
+  border-radius: $radius-pill;
+  box-shadow: 0 4px 20px $shadow;
+  padding: 0 20px;
+  transition: all $transition-fast;
+
+  &:focus-within {
+    box-shadow: 0 6px 30px rgba(201, 162, 39, 0.3);
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 0 16px;
+  }
+}
+
+.search-icon {
+  font-size: 18px;
+  color: $gold-primary;
+  margin-right: 12px;
+  flex-shrink: 0;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 16px;
+    margin-right: 10px;
+  }
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 16px 0;
+  font-family: $font-primary;
+  font-size: 15px;
+  color: $coffee-dark;
+  background: transparent;
+
+  &::placeholder {
+    color: lighten($coffee-medium, 30%);
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 14px;
+    padding: 14px 0;
+  }
+}
+
+.search-clear-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-round;
+  border: none;
+  background: $cream;
+  color: $coffee-medium;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $gold-primary;
+    color: $white;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}
+
+.search-results-count {
+  text-align: center;
+  font-size: 12px;
+  color: $coffee-medium;
+  margin-top: 8px;
+  padding: 6px 16px;
+  background: $white;
+  border-radius: $radius-pill;
+  box-shadow: 0 2px 10px $shadow;
+  display: inline-block;
+  margin-left: 50%;
+  transform: translateX(-50%);
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+}
+
+.search-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: $white;
+  border-radius: $radius-medium;
+  box-shadow: 0 6px 30px rgba(44, 24, 16, 0.2);
+  margin-top: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+
+  @media (max-width: $breakpoint-mobile) {
+    max-height: 300px;
+  }
+}
+
+.search-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background $transition-fast;
+  border-bottom: 1px solid $cream;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: $cream;
+  }
+
+  &:active {
+    background: $cream-dark;
+  }
+
+  @media (max-width: $breakpoint-mobile) {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+}
+
+.suggestion-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $cream;
+  border-radius: $radius-round;
+
+  @media (max-width: $breakpoint-mobile) {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+  }
+}
+
+.suggestion-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestion-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: $coffee-dark;
+  margin-bottom: 2px;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 13px;
+  }
+}
+
+.suggestion-subtitle {
+  font-size: 12px;
+  color: $coffee-medium;
+
+  @media (max-width: $breakpoint-mobile) {
+    font-size: 11px;
+  }
+}
+
+.search-suggestion-item.cafe {
+  .suggestion-icon {
+    background: linear-gradient(135deg, $gold-primary 0%, $gold-light 100%);
+  }
+}
+
+.search-suggestion-item.location {
+  .suggestion-icon {
+    background: linear-gradient(135deg, $google-blue 0%, lighten($google-blue, 20%) 100%);
   }
 }
 
@@ -736,7 +952,7 @@ body {
 
 .filter-pills {
   position: fixed;
-  top: 135px;
+  top: 205px;
   left: 0;
   right: 0;
   padding: 0 16px;
@@ -1026,5 +1242,32 @@ body {
     .btn-icon {
       font-size: 16px;
     }
+  }
+}
+
+// ============================================
+// USER LOCATION MARKER STYLES
+// ============================================
+
+.user-location-marker {
+  width: 20px;
+  height: 20px;
+  background: $google-blue;
+  border: 3px solid $white;
+  border-radius: $radius-round;
+  box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+  animation: pulse-location 2s infinite;
+  position: relative;
+}
+
+@keyframes pulse-location {
+  0% {
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(66, 133, 244, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
   }
 }

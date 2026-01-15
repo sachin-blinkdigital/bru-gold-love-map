@@ -8,6 +8,7 @@ import Popup from './components/Popup';
 import DirectionsPanel from './components/DirectionsPanel';
 import Loading from './components/Loading';
 import HeatMapToggle from './components/HeatMapToggle';
+import SearchBar from './components/SearchBar';
 import { GOOGLE_MAPS_API_KEY } from './config/mapConfig';
 import coffeeSpots from './data/coffeeSpots';
 
@@ -23,6 +24,7 @@ function App() {
   const [directionsRenderer, setDirectionsRenderer] = useState(null);
   const [map, setMap] = useState(null);
   const [showHeatMap, setShowHeatMap] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Hiding loading screen after 1.5s 
   useEffect(() => {
@@ -72,12 +74,32 @@ function App() {
     setShowHeatMap(prev => !prev);
   }, []);
 
+  const handleSearchChange = useCallback((query) => {
+    setSearchQuery(query);
+  }, []);
+
   const filteredSpots = coffeeSpots.filter((spot) => {
-    if (currentFilter === 'all') return true;
-    if (currentFilter === 'bru-gold') {
-      return spot.type === 'gold' || spot.type === 'special';
+    // Filter by category
+    let matchesFilter = true;
+    if (currentFilter === 'all') {
+      matchesFilter = true;
+    } else if (currentFilter === 'bru-gold') {
+      matchesFilter = spot.type === 'gold' || spot.type === 'special';
+    } else {
+      matchesFilter = spot.categories.includes(currentFilter);
     }
-    return spot.categories.includes(currentFilter);
+
+    // Filter by search query
+    let matchesSearch = true;
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      matchesSearch =
+        spot.name.toLowerCase().includes(query) ||
+        spot.address.toLowerCase().includes(query) ||
+        spot.subtitle.toLowerCase().includes(query);
+    }
+
+    return matchesFilter && matchesSearch;
   });
 
   return (
@@ -86,19 +108,25 @@ function App() {
 
       <Header currentFilter={currentFilter} onFilterChange={handleFilterChange} />
 
-      <div className="map-instruction">
+      <SearchBar
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        resultCount={filteredSpots.length}
+      />
+
+      {/* <div className="map-instruction">
         <span className="instruction-icon">☕</span>
         Tap a pin to see the vibe, photos, and book a table instantly
-      </div>
+      </div> */}
 
       <DirectionsPanel
         directionsInfo={directionsInfo}
         selectedSpot={selectedSpot}
         onClearDirections={handleClearDirections}
-        onTravelModeChange={(mode) => {}}
+        onTravelModeChange={(mode) => { }}
       />
 
-      <FilterPills currentFilter={currentFilter} onFilterChange={handleFilterChange} />
+      {/* <FilterPills currentFilter={currentFilter} onFilterChange={handleFilterChange} /> */}
 
       <LoadScript
         googleMapsApiKey={GOOGLE_MAPS_API_KEY}
